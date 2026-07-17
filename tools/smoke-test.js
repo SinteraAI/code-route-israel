@@ -31,12 +31,12 @@ check('leçon dépliable', doc.querySelector('#lessons-list .lesson').classList.
 
 // Panneaux
 window.showView('panneaux');
-check('73 panneaux dans la grille', doc.querySelectorAll('#sign-grid .sign-cell').length === 73);
+check('135 panneaux dans la grille', doc.querySelectorAll('#sign-grid .sign-cell').length === 135);
 check('7 filtres (Tous + 6 cat.)', doc.querySelectorAll('#sign-chips .chip').length === 7);
 window.setSignFilter('danger');
-check('filtre danger = 27 panneaux', doc.querySelectorAll('#sign-grid .sign-cell').length === 27);
+check('filtre danger = 47 panneaux', doc.querySelectorAll('#sign-grid .sign-cell').length === 47);
 window.setSignFilter('marquage');
-check('filtre marquage = 11', doc.querySelectorAll('#sign-grid .sign-cell').length === 11);
+check('filtre marquage = 22', doc.querySelectorAll('#sign-grid .sign-cell').length === 22);
 window.setSignFilter('tous');
 window.openSign('stop');
 check('fiche panneau ouverte (STOP)', doc.querySelector('#sheet').textContent.includes('STOP'));
@@ -106,7 +106,7 @@ check('boîtes flashcards sauvegardées', Object.keys(JSON.parse(window.localSto
 
 // Intégrité des données
 const badSigns = window.eval("SIGNS").filter(s => !s.svg || !s.name || !s.sens || !s.cat);
-check('73 fiches complètes', window.eval("SIGNS").length === 73 && badSigns.length === 0);
+check('135 fiches complètes', window.eval("SIGNS").length === 135 && badSigns.length === 0);
 const badQ = window.eval("THEORY_QUESTIONS").filter(q => q.choices.length !== 4 || q.answer !== 0 || !q.explain);
 check('39 questions bien formées', window.eval("THEORY_QUESTIONS").length === 39 && badQ.length === 0);
 
