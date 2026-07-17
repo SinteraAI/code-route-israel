@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Code de la route Israël — en français</title>
+<meta name="description" content="Réviser la théorie du code de la route israélien en français : panneaux, règles, quiz et examens blancs.">
+<style>
+:root{
+  --bg:#f4f6f9; --card:#ffffff; --ink:#1c2530; --muted:#5c6b7a;
+  --accent:#1467b3; --accent-soft:#e3eefb; --red:#c8102e; --red-soft:#fdeaea;
+  --green:#1d8a4e; --green-soft:#e4f5eb; --amber:#b97a00; --amber-soft:#fdf3dd;
+  --line:#dde4ec; --shadow:0 1px 3px rgba(20,35,60,.08),0 4px 14px rgba(20,35,60,.06);
+  --radius:14px; --nav-h:62px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.55;
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom));
+}
+header.app{
+  position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 16px;
+}
+header.app h1{font-size:17px;font-weight:700;letter-spacing:-.01em}
+header.app h1 .flag{margin-right:6px}
+#countdown{font-size:13px;font-weight:600;background:var(--accent-soft);color:var(--accent);
+  padding:5px 10px;border-radius:99px;white-space:nowrap}
+#countdown.urgent{background:var(--red-soft);color:var(--red)}
+main{max-width:760px;margin:0 auto;padding:16px}
+section.view{display:none}
+section.view.active{display:block;animation:fade .18s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+.card h2{font-size:18px;margin-bottom:8px;letter-spacing:-.01em}
+.card h3{font-size:15px;margin:14px 0 6px}
+.card p{font-size:14.5px;color:var(--ink)}
+.muted{color:var(--muted);font-size:13.5px}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-size:15px;font-weight:600;border:none;border-radius:12px;cursor:pointer;
+  padding:12px 18px;background:var(--accent);color:#fff;-webkit-tap-highlight-color:transparent}
+.btn:active{transform:scale(.98)}
+.btn.secondary{background:var(--accent-soft);color:var(--accent)}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn.green{background:var(--green)} .btn.red{background:var(--red)}
+.btn.block{width:100%;margin-top:10px}
+.btn:disabled{opacity:.45;cursor:default}
+
+nav.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;height:calc(var(--nav-h) + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  background:var(--card);border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(5,1fr)}
+nav.tabbar button{
+  border:none;background:none;cursor:pointer;font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-size:11px;font-weight:600;color:var(--muted);-webkit-tap-highlight-color:transparent}
+nav.tabbar button .ico{font-size:21px;line-height:1}
+nav.tabbar button.active{color:var(--accent)}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{font-size:13px;font-weight:600;padding:7px 13px;border-radius:99px;cursor:pointer;
+  background:var(--card);border:1px solid var(--line);color:var(--muted);-webkit-tap-highlight-color:transparent}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.sign-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.sign-cell{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:10px 6px 8px;text-align:center;cursor:pointer;box-shadow:var(--shadow);
+  -webkit-tap-highlight-color:transparent}
+.sign-cell:active{transform:scale(.97)}
+.sign-cell svg{width:64px;height:64px;display:block;margin:0 auto 6px}
+.sign-cell .nm{font-size:11px;font-weight:600;color:var(--ink);line-height:1.25;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sign-cell .known{position:relative}
+.sign-cell.mastered{border-color:var(--green)}
+
+.sheet-backdrop{position:fixed;inset:0;background:rgba(15,25,40,.45);z-index:40;
+  display:none;align-items:flex-end;justify-content:center}
+.sheet-backdrop.open{display:flex}
+.sheet{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:760px;
+  max-height:82vh;overflow-y:auto;padding:22px 20px calc(22px + env(safe-area-inset-bottom));
+  animation:slideup .22s ease}
+@keyframes slideup{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
+.sheet .sign-big{display:flex;justify-content:center;margin-bottom:14px}
+.sheet .sign-big svg{width:150px;height:150px}
+.sheet h2{font-size:19px;text-align:center;margin-bottom:4px}
+.sheet .num{text-align:center;margin-bottom:12px}
+.sheet .close{margin-top:16px}
+.tipbox{background:var(--amber-soft);border-radius:10px;padding:10px 12px;font-size:14px;margin-top:10px}
+.tipbox b{color:var(--amber)}
+
+.flash-stage{min-height:330px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:20px}
+.flash-stage svg{width:170px;height:170px}
+.flash-answer{margin-top:14px}
+.flash-answer h3{font-size:18px;margin-bottom:4px}
+.flash-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.progressbar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progressbar>i{display:block;height:100%;background:var(--green);border-radius:99px;transition:width .3s}
+
+.qopt{display:block;width:100%;text-align:left;font-family:inherit;font-size:14.5px;
+  background:var(--card);border:1.5px solid var(--line);border-radius:12px;
+  padding:12px 14px;margin-bottom:9px;cursor:pointer;color:var(--ink);-webkit-tap-highlight-color:transparent}
+.qopt:active{border-color:var(--accent)}
+.qopt.correct{border-color:var(--green);background:var(--green-soft)}
+.qopt.wrong{border-color:var(--red);background:var(--red-soft)}
+.qopt.reveal{border-color:var(--green)}
+.qopt:disabled{cursor:default;opacity:1}
+.qopt .optsign svg{width:84px;height:84px;display:block;margin:2px auto}
+.q-sign{display:flex;justify-content:center;margin:10px 0 14px}
+.q-sign svg{width:140px;height:140px}
+.explain{border-radius:10px;padding:11px 13px;font-size:14px;margin-top:6px}
+.explain.good{background:var(--green-soft)} .explain.bad{background:var(--red-soft)}
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
+  font-size:13.5px;font-weight:600;color:var(--muted)}
+.score-big{font-size:44px;font-weight:800;text-align:center;letter-spacing:-.02em}
+.verdict{text-align:center;font-size:17px;font-weight:700;margin:4px 0 14px}
+.verdict.pass{color:var(--green)} .verdict.fail{color:var(--red)}
+.review-item{border-top:1px solid var(--line);padding:12px 0}
+.review-item .rq{font-weight:600;font-size:14px;margin-bottom:4px}
+.review-item svg{width:64px;height:64px}
+
+.lesson{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);
+  margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden}
+.lesson>button.lhead{width:100%;display:flex;align-items:center;gap:12px;border:none;
+  background:none;font-family:inherit;text-align:left;padding:15px 16px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent}
+.lesson .lhead .lico{font-size:22px}
+.lesson .lhead .lt{flex:1}
+.lesson .lhead .lt b{font-size:15.5px;display:block}
+.lesson .lhead .lt span{font-size:12.5px;color:var(--muted)}
+.lesson .lhead .arr{color:var(--muted);transition:transform .2s}
+.lesson.open .lhead .arr{transform:rotate(90deg)}
+.lesson .lbody{display:none;padding:2px 16px 16px;font-size:14.5px}
+.lesson.open .lbody{display:block}
+.lesson .lbody h4{font-size:14px;margin:14px 0 5px;color:var(--accent)}
+.lesson .lbody ul{padding-left:20px;margin:6px 0}
+.lesson .lbody li{margin-bottom:5px}
+.lesson .lbody table{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0}
+.lesson .lbody th,.lesson .lbody td{border:1px solid var(--line);padding:7px 9px;text-align:left}
+.lesson .lbody th{background:var(--accent-soft);color:var(--accent)}
+.keyfact{background:var(--accent-soft);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:14px}
+.warnfact{background:var(--red-soft);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:14px}
+.curb{display:inline-block;width:44px;height:16px;border-radius:4px;border:1px solid rgba(0,0,0,.2);
+  vertical-align:middle;margin-right:8px}
+.inline-sign{display:inline-block;vertical-align:middle;margin:0 4px}
+.inline-sign svg{width:34px;height:34px;display:block}
+
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px;text-align:center;box-shadow:var(--shadow)}
+.stat b{font-size:22px;display:block}
+.stat span{font-size:12px;color:var(--muted)}
+.plan-day{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)}
+.plan-day:first-of-type{border-top:none}
+.plan-day input[type=checkbox]{width:20px;height:20px;margin-top:2px;accent-color:var(--green)}
+.plan-day label{font-size:14px;flex:1}
+.plan-day label b{display:block;font-size:13px;color:var(--accent)}
+.plan-day.done label{opacity:.55;text-decoration:line-through}
+
+.home-hero{background:linear-gradient(135deg,#1467b3,#0d4f8f);color:#fff;border:none}
+.home-hero h2{color:#fff}
+.home-hero p{color:#dcebfa;font-size:14px}
+.home-hero .btn{background:#fff;color:var(--accent);margin-top:12px}
+
+@media(min-width:640px){
+  .sign-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+  .sheet-backdrop{align-items:center}
+  .sheet{border-radius:20px;max-width:520px}
+}
+</style>
+</head>
+<body>
+
+<header class="app">
+  <h1><span class="flag">🇮🇱</span>Code de la route</h1>
+  <div id="countdown"></div>
+</header>
+
+<main>
+  <section class="view" id="view-accueil"></section>
+  <section class="view" id="view-lecons">
+    <div class="card" style="margin-bottom:14px">
+      <h2>📚 La théorie, thème par thème</h2>
+      <p class="muted">Lis chaque leçon, puis vérifie avec les quiz. Les chiffres à connaître par cœur sont surlignés en bleu.</p>
+    </div>
+    <div id="lessons-list"></div>
+  </section>
+  <section class="view" id="view-panneaux">
+    <div class="card" style="margin-bottom:14px">
+      <h2>🚸 Les panneaux israéliens</h2>
+      <p class="muted">Touche un panneau pour voir sa signification et l'astuce d'examen.</p>
+    </div>
+    <div class="chips" id="sign-chips"></div>
+    <div class="sign-grid" id="sign-grid"></div>
+  </section>
+  <section class="view" id="view-cartes"></section>
+  <section class="view" id="view-quiz"></section>
+</main>
+
+<div class="sheet-backdrop" id="sheet-backdrop">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<nav class="tabbar">
+  <button data-view="accueil" class="active"><span class="ico">🏠</span>Accueil</button>
+  <button data-view="lecons"><span class="ico">📚</span>Leçons</button>
+  <button data-view="panneaux"><span class="ico">⚠️</span>Panneaux</button>
+  <button data-view="cartes"><span class="ico">🃏</span>Cartes</button>
+  <button data-view="quiz"><span class="ico">✅</span>Quiz</button>
+</nav>
+
+<script>
+'use strict';
+
+/* ================= DONNÉES : PANNEAUX (rempli après vérification) ================= */
+const SIGNS = [];
+
+/* ================= DONNÉES : LEÇONS (rempli après vérification) ================= */
+const LESSONS = [];
+
+/* ================= DONNÉES : QUESTIONS THÉORIE (rempli après vérification) ================= */
+const THEORY_QUESTIONS = [];
+
+/* Paramètres examen blanc — alignés sur l'examen réel (vérifiés) */
+const EXAM = { total: 30, pass: 26, minutes: 40 };
+
+const CATS = [
+  { id:'danger',      label:'Danger',       color:'#c8102e' },
+  { id:'priorite',    label:'Priorité',     color:'#c8102e' },
+  { id:'interdiction',label:'Interdiction', color:'#c8102e' },
+  { id:'obligation',  label:'Obligation',   color:'#1467b3' },
+  { id:'indication',  label:'Indication',   color:'#1467b3' },
+  { id:'marquage',    label:'Marquage & bordures', color:'#5c6b7a' },
+];
+
+/* ================= ÉTAT PERSISTANT ================= */
+const store = {
+  read(k, fb){ try{ const v = localStorage.getItem('crIL.'+k); return v===null? fb : JSON.parse(v);}catch(e){ return fb; } },
+  write(k, v){ try{ localStorage.setItem('crIL.'+k, JSON.stringify(v)); }catch(e){} }
+};
+let flashBoxes = store.read('flash', {});
+let bestExam = store.read('bestExam', null);
+let planDone = store.read('plan', {});
+let examDate = store.read('examDate', null);
+
+/* ================= UTILITAIRES ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+function shuffle(a){ const x=[...a]; for(let i=x.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [x[i],x[j]]=[x[j],x[i]]; } return x; }
+function pick(a,n){ return shuffle(a).slice(0,n); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ================= NAVIGATION ================= */
+function showView(name){
+  $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-'+name));
+  $$('nav.tabbar button').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+  window.scrollTo({top:0});
+  if(name==='accueil') renderHome();
+  if(name==='cartes') renderFlashHome();
+  if(name==='quiz' && !quizSession) renderQuizHome();
+}
+$$('nav.tabbar button').forEach(b => b.addEventListener('click', () => { quizSession=null; showView(b.dataset.view); }));
+
+/* ================= COMPTE À REBOURS ================= */
+function renderCountdown(){
+  const el = $('#countdown');
+  if(!examDate){ el.textContent = '📅 Examen ?'; el.classList.remove('urgent'); return; }
+  const days = Math.ceil((new Date(examDate+'T09:00:00') - new Date()) / 86400000);
+  if(days > 1){ el.textContent = '⏳ J-'+days; el.classList.toggle('urgent', days<=2); }
+  else if(days === 1){ el.textContent = '🔥 Demain !'; el.classList.add('urgent'); }
+  else if(days === 0){ el.textContent = "🎯 C'est aujourd'hui !"; el.classList.add('urgent'); }
+  else { el.textContent = '✅ Examen passé'; el.classList.remove('urgent'); }
+}
+
+/* ================= ACCUEIL ================= */
+function masteredCount(){ return SIGNS.filter(s => (flashBoxes[s.id]||0) >= 2).length; }
+function renderHome(){
+  const total = SIGNS.length;
+  const mastered = masteredCount();
+  const pct = total? Math.round(mastered/total*100) : 0;
+  const plan = [
+    { d:'Jour 1', t:"Leçons « Priorités » + « Vitesses ». Parcourir tous les panneaux de danger et priorité." },
+    { d:'Jour 2', t:"Leçons « Feux » + « Stationnement ». Flashcards : interdictions et obligations." },
+    { d:'Jour 3', t:"Leçon « Conduite & sécurité ». Flashcards : tous les panneaux, viser 80 % maîtrisés." },
+    { d:'Jour 4', t:"2 examens blancs le matin, revoir chaque erreur. Flashcards « à revoir » le soir." },
+    { d:'Jour 5', t:"1 examen blanc. Relire les chiffres clés. Repos — tu es prête ! 💪" },
+  ];
+  $('#view-accueil').innerHTML = `
+    <div class="card home-hero">
+      <h2>Bonjour ! 👋</h2>
+      <p>Cette application t'aide à préparer l'examen théorique israélien, en français : d'abord comprendre la théorie et les panneaux, ensuite t'entraîner avec des quiz.</p>
+      <button class="btn" onclick="showView('lecons')">Commencer par les leçons →</button>
+    </div>
+    <div class="card">
+      <h2>📅 Ton examen</h2>
+      <p class="muted">Choisis la date pour activer le compte à rebours.</p>
+      <input type="date" id="exam-date-input" value="${examDate||''}"
+        style="margin-top:8px;font-family:inherit;font-size:15px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)">
+    </div>
+    <div class="card">
+      <h2>📈 Ta progression</h2>
+      <div class="progressbar"><i style="width:${pct}%"></i></div>
+      <p class="muted">${mastered} / ${total} panneaux maîtrisés (${pct} %)</p>
+      <div class="stat-row">
+        <div class="stat"><b>${bestExam===null?'—':bestExam+' / '+EXAM.total}</b><span>Meilleur examen blanc</span></div>
+        <div class="stat"><b>${bestExam===null?'—':(bestExam>=EXAM.pass?'✅ Reçue':'⏳ Pas encore')}</b><span>Seuil : ${EXAM.pass} bonnes réponses</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>🗓️ Plan sur 5 jours</h2>
+      ${plan.map((p,i)=>`
+        <div class="plan-day ${planDone[i]?'done':''}">
+          <input type="checkbox" id="plan-${i}" ${planDone[i]?'checked':''} onchange="togglePlan(${i},this.checked)">
+          <label for="plan-${i}"><b>${p.d}</b>${p.t}</label>
+        </div>`).join('')}
+    </div>`;
+  $('#exam-date-input').addEventListener('change', e => {
+    examDate = e.target.value || null; store.write('examDate', examDate); renderCountdown();
+  });
+}
+function togglePlan(i, v){ planDone[i]=v; store.write('plan', planDone); renderHome(); }
+
+/* ================= LEÇONS ================= */
+function renderLessons(){
+  $('#lessons-list').innerHTML = LESSONS.map((l,i)=>`
+    <div class="lesson" id="lesson-${i}">
+      <button class="lhead" onclick="document.getElementById('lesson-${i}').classList.toggle('open')">
+        <span class="lico">${l.icon}</span>
+        <span class="lt"><b>${esc(l.title)}</b><span>${esc(l.sub)}</span></span>
+        <span class="arr">▶</span>
+      </button>
+      <div class="lbody">${l.body}</div>
+    </div>`).join('');
+}
+
+/* ================= PANNEAUX ================= */
+let signFilter = 'tous';
+function renderSignChips(){
+  const chips = [{id:'tous',label:'Tous'}].concat(CATS);
+  $('#sign-chips').innerHTML = chips.map(c =>
+    `<button class="chip ${signFilter===c.id?'active':''}" onclick="setSignFilter('${c.id}')">${c.label}</button>`).join('');
+}
+function setSignFilter(id){ signFilter=id; renderSignChips(); renderSignGrid(); }
+function renderSignGrid(){
+  const list = SIGNS.filter(s => signFilter==='tous' || s.cat===signFilter);
+  $('#sign-grid').innerHTML = list.map(s =>
+    `<div class="sign-cell ${(flashBoxes[s.id]||0)>=2?'mastered':''}" onclick="openSign('${s.id}')">${s.svg}<div class="nm">${esc(s.name)}</div></div>`).join('');
+}
+function openSign(id){
+  const s = SIGNS.find(x=>x.id===id); if(!s) return;
+  const cat = CATS.find(c=>c.id===s.cat);
+  $('#sheet').innerHTML = `
+    <div class="sign-big">${s.svg}</div>
+    <h2>${esc(s.name)}</h2>
+    <p class="num"><span class="pill" style="background:${cat.color}18;color:${cat.color}">${cat.label}${s.num? ' · n° '+esc(s.num):''}</span></p>
+    <p>${s.sens}</p>
+    ${s.tip? `<div class="tipbox"><b>💡 Astuce examen :</b> ${s.tip}</div>`:''}
+    <button class="btn secondary block close" onclick="closeSheet()">Fermer</button>`;
+  $('#sheet-backdrop').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSheet(){ $('#sheet-backdrop').classList.remove('open'); document.body.style.overflow=''; }
+$('#sheet-backdrop').addEventListener('click', e => { if(e.target.id==='sheet-backdrop') closeSheet(); });
+
+/* ================= FLASHCARDS ================= */
+let flashDeck = [], flashIdx = 0, flashRevealed = false, flashSessionStats = null;
+function renderFlashHome(){
+  const total = SIGNS.length, mastered = masteredCount();
+  const toReview = SIGNS.filter(s=>(flashBoxes[s.id]||0)===0).length;
+  $('#view-cartes').innerHTML = `
+    <div class="card">
+      <h2>🃏 Flashcards panneaux</h2>
+      <p class="muted">Regarde le panneau, devine sa signification, puis retourne la carte. Sois honnête avec toi-même : « À revoir » le fera revenir plus souvent.</p>
+      <div class="progressbar"><i style="width:${total?Math.round(mastered/total*100):0}%"></i></div>
+      <p class="muted">${mastered} / ${total} maîtrisés · ${toReview} jamais vus ou à revoir</p>
+      <button class="btn block" onclick="startFlash('smart')">▶ Séance intelligente (20 cartes)</button>
+      <button class="btn secondary block" onclick="startFlash('tous')">Tous les panneaux</button>
+      <div class="chips" style="margin-top:12px">
+        ${CATS.map(c=>`<button class="chip" onclick="startFlash('${c.id}')">${c.label}</button>`).join('')}
+      </div>
+    </div>`;
+}
+function startFlash(mode){
+  let pool = SIGNS;
+  if(mode!=='tous' && mode!=='smart') pool = SIGNS.filter(s=>s.cat===mode);
+  if(mode==='smart'){
+    const weighted = [];
+    SIGNS.forEach(s => { const b = flashBoxes[s.id]||0; const w = b===0?4 : b===1?2 : 1; for(let i=0;i<w;i++) weighted.push(s); });
+    const seen = new Set(); flashDeck = [];
+    for(const s of shuffle(weighted)){ if(!seen.has(s.id)){ seen.add(s.id); flashDeck.push(s); if(flashDeck.length>=20) break; } }
+  } else {
+    flashDeck = shuffle(pool);
+  }
+  if(!flashDeck.length) return;
+  flashIdx = 0; flashRevealed = false; flashSessionStats = {ok:0, ko:0};
+  renderFlashCard();
+}
+function renderFlashCard(){
+  if(flashIdx >= flashDeck.length){ renderFlashEnd(); return; }
+  const s = flashDeck[flashIdx];
+  $('#view-cartes').innerHTML = `
+    <div class="quiz-top">
+      <span>Carte ${flashIdx+1} / ${flashDeck.length}</span>
+      <button class="chip" onclick="renderFlashHome()">✕ Quitter</button>
+    </div>
+    <div class="card flash-stage" onclick="${flashRevealed?'':'revealFlash()'}">
+      ${s.svg}
+      ${flashRevealed
+        ? `<div class="flash-answer"><h3>${esc(s.name)}</h3><p class="muted">${s.sens}</p></div>`
+        : `<p class="muted" style="margin-top:14px">Touche la carte pour voir la réponse</p>`}
+    </div>
+    ${flashRevealed ? `
+      <div class="flash-btns">
+        <button class="btn red" onclick="gradeFlash(false)">😕 À revoir</button>
+        <button class="btn green" onclick="gradeFlash(true)">😊 Je sais</button>
+      </div>` : ''}`;
+}
+function revealFlash(){ flashRevealed = true; renderFlashCard(); }
+function gradeFlash(ok){
+  const s = flashDeck[flashIdx];
+  const b = flashBoxes[s.id]||0;
+  flashBoxes[s.id] = ok ? Math.min(3, b+1) : 0;
+  store.write('flash', flashBoxes);
+  flashSessionStats[ok?'ok':'ko']++;
+  flashIdx++; flashRevealed = false;
+  renderFlashCard();
+}
+function renderFlashEnd(){
+  const {ok, ko} = flashSessionStats;
+  $('#view-cartes').innerHTML = `
+    <div class="card" style="text-align:center">
+      <h2>Séance terminée ! 🎉</h2>
+      <p class="score-big" style="color:var(--green)">${ok} ✓</p>
+      <p class="muted">${ko} carte${ko>1?'s':''} à revoir — elle${ko>1?'s':''} reviendr${ko>1?'ont':'a'} en priorité.</p>
+      <button class="btn block" onclick="startFlash('smart')">▶ Nouvelle séance</button>
+      <button class="btn secondary block" onclick="renderFlashHome()">Retour</button>
+    </div>`;
+}
+
+/* ================= QUIZ ================= */
+let quizSession = null, examTimer = null;
+
+function buildSignQuestion(sign, reverse){
+  const others = pick(SIGNS.filter(s => s.id!==sign.id && s.cat===sign.cat), 3);
+  while(others.length<3){ const extra = SIGNS.find(s=>s.id!==sign.id && !others.includes(s)); if(!extra) break; others.push(extra); }
+  if(reverse){
+    return { type:'signrev', q:`Quel panneau signifie : « ${sign.short||sign.name} » ?`,
+      options: shuffle([sign, ...others]).map(s=>({svg:s.svg, id:s.id})),
+      answerId: sign.id, explain: sign.sens, sign };
+  }
+  return { type:'sign', q:'Que signifie ce panneau ?', sign,
+    options: shuffle([sign, ...others]).map(s=>({label:s.short||s.name, id:s.id})),
+    answerId: sign.id, explain: sign.sens };
+}
+function buildTheoryQuestion(tq){
+  const opts = tq.choices.map((c,i)=>({label:c, id:i}));
+  return { type:'theory', q:tq.q, options:shuffle(opts), answerId:tq.answer, explain:tq.explain };
+}
+function makeQuiz(kind){
+  let qs = [];
+  if(kind==='panneaux'){
+    qs = pick(SIGNS.filter(s=>s.cat!=='marquage'), 15).map((s,i)=> buildSignQuestion(s, i%3===2));
+  } else if(kind==='theorie'){
+    qs = pick(THEORY_QUESTIONS, Math.min(15, THEORY_QUESTIONS.length)).map(buildTheoryQuestion);
+  } else {
+    const nTheory = Math.min(15, THEORY_QUESTIONS.length);
+    const signQs = pick(SIGNS.filter(s=>s.cat!=='marquage'), EXAM.total-nTheory).map((s,i)=> buildSignQuestion(s, i%3===2));
+    const thQs = pick(THEORY_QUESTIONS, nTheory).map(buildTheoryQuestion);
+    qs = shuffle([...signQs, ...thQs]);
+  }
+  return qs;
+}
+function renderQuizHome(){
+  clearInterval(examTimer);
+  $('#view-quiz').innerHTML = `
+    <div class="card">
+      <h2>✅ S'entraîner</h2>
+      <p class="muted">Feedback immédiat après chaque question, avec explication.</p>
+      <button class="btn block" onclick="startQuiz('panneaux','practice')">🚸 Quiz panneaux (15 questions)</button>
+      <button class="btn secondary block" onclick="startQuiz('theorie','practice')">📚 Quiz théorie (15 questions)</button>
+    </div>
+    <div class="card">
+      <h2>🎓 Examen blanc</h2>
+      <p class="muted">Comme le vrai examen : ${EXAM.total} questions, ${EXAM.minutes} minutes, réponses corrigées seulement à la fin. Il faut au moins ${EXAM.pass} bonnes réponses.</p>
+      <button class="btn green block" onclick="startQuiz('examen','exam')">🎯 Lancer l'examen blanc</button>
+      ${bestExam!==null? `<p class="muted" style="margin-top:8px;text-align:center">Meilleur score : ${bestExam} / ${EXAM.total}</p>`:''}
+    </div>`;
+}
+function startQuiz(kind, mode){
+  const questions = makeQuiz(kind);
+  if(!questions.length) return;
+  quizSession = { kind, mode, questions, idx:0, answers:[], done:false, secondsLeft: EXAM.minutes*60 };
+  if(mode==='exam'){
+    clearInterval(examTimer);
+    examTimer = setInterval(()=>{
+      if(!quizSession || quizSession.done){ clearInterval(examTimer); return; }
+      quizSession.secondsLeft--;
+      const t = $('#exam-clock');
+      if(t) t.textContent = fmtClock(quizSession.secondsLeft);
+      if(quizSession.secondsLeft<=0){ finishQuiz(); }
+    }, 1000);
+  }
+  renderQuestion();
+}
+function fmtClock(s){ const m=Math.floor(s/60), r=s%60; return m+':'+String(r).padStart(2,'0'); }
+function renderQuestion(){
+  const S = quizSession, q = S.questions[S.idx];
+  const answered = S.answers[S.idx] !== undefined;
+  const picked = S.answers[S.idx];
+  $('#view-quiz').innerHTML = `
+    <div class="quiz-top">
+      <span>Question ${S.idx+1} / ${S.questions.length}</span>
+      ${S.mode==='exam' ? `<span id="exam-clock" style="color:var(--red)">${fmtClock(S.secondsLeft)}</span>`:''}
+      <button class="chip" onclick="abandonQuiz()">✕ Quitter</button>
+    </div>
+    <div class="card">
+      <p style="font-weight:600;font-size:15.5px">${esc(q.q)}</p>
+      ${q.type==='sign' ? `<div class="q-sign">${q.sign.svg}</div>`:''}
+      <div style="margin-top:12px">
+      ${q.options.map(o=>{
+        let cls = 'qopt';
+        if(answered && S.mode==='practice'){
+          if(o.id===q.answerId) cls += ' correct';
+          else if(o.id===picked) cls += ' wrong';
+        } else if(answered && o.id===picked){ cls += ' reveal'; }
+        const inner = q.type==='signrev' ? `<span class="optsign">${o.svg}</span>` : esc(o.label);
+        return `<button class="${cls}" ${answered?'disabled':''} onclick="answerQuiz(${esc(JSON.stringify(o.id))})">${inner}</button>`;
+      }).join('')}
+      </div>
+      ${answered && S.mode==='practice' ? `
+        <div class="explain ${picked===q.answerId?'good':'bad'}">
+          ${picked===q.answerId?'✅ Exact !':'❌ Pas tout à fait.'} ${q.explain}
+        </div>
+        <button class="btn block" onclick="nextQuestion()">${S.idx+1<S.questions.length?'Question suivante →':'Voir le résultat'}</button>`:''}
+    </div>`;
+}
+function answerQuiz(id){
+  const S = quizSession;
+  S.answers[S.idx] = id;
+  if(S.mode==='exam'){
+    if(S.idx+1 < S.questions.length){ S.idx++; renderQuestion(); }
+    else finishQuiz();
+  } else {
+    renderQuestion();
+  }
+}
+function nextQuestion(){
+  const S = quizSession;
+  if(S.idx+1 < S.questions.length){ S.idx++; renderQuestion(); }
+  else finishQuiz();
+}
+function abandonQuiz(){ quizSession=null; clearInterval(examTimer); renderQuizHome(); }
+function finishQuiz(){
+  const S = quizSession; S.done = true; clearInterval(examTimer);
+  const score = S.questions.reduce((n,q,i)=> n + (S.answers[i]===q.answerId ?1:0), 0);
+  const isExam = S.mode==='exam';
+  if(isExam && (bestExam===null || score>bestExam)){ bestExam = score; store.write('bestExam', bestExam); }
+  const pass = score >= Math.round(EXAM.pass * S.questions.length / EXAM.total);
+  $('#view-quiz').innerHTML = `
+    <div class="card">
+      <p class="score-big" style="color:${pass?'var(--green)':'var(--red)'}">${score} / ${S.questions.length}</p>
+      ${isExam? `<p class="verdict ${pass?'pass':'fail'}">${pass? '🎉 Reçue ! (seuil : '+EXAM.pass+')' : 'Pas encore — il faut '+EXAM.pass+' bonnes réponses.'}</p>`
+              : `<p class="verdict ${pass?'pass':'fail'}">${pass? 'Très bien ! 🎉':'Continue, ça vient ! 💪'}</p>`}
+      <button class="btn block" onclick="startQuiz('${S.kind}','${S.mode}')">↻ Recommencer</button>
+      <button class="btn secondary block" onclick="quizSession=null;renderQuizHome()">Retour aux quiz</button>
+    </div>
+    ${renderReview(S)}`;
+  window.scrollTo({top:0});
+}
+function renderReview(S){
+  const wrong = S.questions.map((q,i)=>({q,i})).filter(x => S.answers[x.i]!==x.q.answerId);
+  if(!wrong.length) return `<div class="card"><p>Sans faute, bravo ! 🌟</p></div>`;
+  return `<div class="card"><h2>À revoir (${wrong.length})</h2>
+    ${wrong.map(({q,i})=>{
+      const yourAns = q.options.find(o=>o.id===S.answers[i]);
+      const goodAns = q.options.find(o=>o.id===q.answerId);
+      return `<div class="review-item">
+        <p class="rq">${esc(q.q)}</p>
+        ${q.type==='sign' ? q.sign.svg : ''}
+        ${q.type==='signrev' ? `<p class="muted">Bonne réponse :</p>${goodAns.svg}` : `<p class="muted">Bonne réponse : <b>${esc(goodAns.label)}</b></p>`}
+        ${yourAns!==undefined ? (q.type==='signrev' ? '' : `<p class="muted">Ta réponse : ${esc(yourAns.label||'—')}</p>`) : `<p class="muted">Pas de réponse (temps écoulé)</p>`}
+        <p style="font-size:13.5px;margin-top:4px">${q.explain}</p>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+/* ================= INIT ================= */
+renderCountdown();
+setInterval(renderCountdown, 60000);
+renderLessons();
+renderSignChips();
+renderSignGrid();
+renderHome();
+showView('accueil');
+</script>
+</body>
+</html>
