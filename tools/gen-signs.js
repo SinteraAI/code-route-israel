@@ -1,0 +1,337 @@
+// Générateur des pictogrammes SVG des panneaux israéliens.
+// Conforme au לוח התמרורים (éd. consolidée 09/2022) d'après la recherche vérifiée.
+// Sort: preview.svg (grille de contrôle visuel) + signs-svg.json (id -> svg).
+'use strict';
+const fs = require('fs');
+
+const RED = '#c8102e', BLUE = '#0e63ae', INK = '#14181d', WHT = '#ffffff';
+const YEL = '#ffd400', ORG = '#ff7900', ASPH = '#4d545e', GRY = '#9aa1ab';
+
+const W = inner => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">${inner}</svg>`;
+
+// --- gabarits ---
+const tri = inner =>
+  `<path d="M60 5 L116.5 105 L3.5 105 Z" fill="${RED}"/>` +
+  `<path d="M60 23.5 L102.5 98.5 L17.5 98.5 Z" fill="${WHT}"/>` + inner;
+
+const triInv =
+  `<path d="M3.5 15 L116.5 15 L60 115 Z" fill="${RED}"/>` +
+  `<path d="M17.5 21.5 L102.5 21.5 L60 96.5 Z" fill="${WHT}"/>`;
+
+const ring = inner =>
+  `<circle cx="60" cy="60" r="56" fill="${RED}"/>` +
+  `<circle cx="60" cy="60" r="43.5" fill="${WHT}"/>` + inner;
+
+const ringSlash = inner => ring(inner) +
+  `<rect x="17" y="54" width="86" height="12" fill="${RED}" transform="rotate(45 60 60)"/>`;
+
+const blueRing = (bars) =>
+  `<circle cx="60" cy="60" r="56" fill="${RED}"/>` +
+  `<circle cx="60" cy="60" r="43.5" fill="${BLUE}"/>` +
+  bars.map(a => `<rect x="17" y="54.5" width="86" height="11" fill="${RED}" transform="rotate(${a} 60 60)"/>`).join('');
+
+const blueDisc = inner =>
+  `<circle cx="60" cy="60" r="56" fill="${WHT}"/>` +
+  `<circle cx="60" cy="60" r="52" fill="${BLUE}"/>` + inner;
+
+const blueSq = inner =>
+  `<rect x="6" y="6" width="108" height="108" rx="10" fill="${WHT}"/>` +
+  `<rect x="10" y="10" width="100" height="100" rx="7" fill="${BLUE}"/>` + inner;
+
+const octagon =
+  `<path d="M36 4 H84 L116 36 V84 L84 116 H36 L4 84 V36 Z" fill="${WHT}"/>` +
+  `<path d="M38.5 10 H81.5 L110 38.5 V81.5 L81.5 110 H38.5 L10 81.5 V38.5 Z" fill="${RED}"/>`;
+
+// --- briques ---
+const arrow = (x, y, rot, color, s = 1) =>
+  `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})">` +
+  `<path d="M0 -26 L11 -9 L4.5 -9 L4.5 26 L-4.5 26 L-4.5 -9 L-11 -9 Z" fill="${color}"/></g>`;
+
+const walker = (x, y, color, s = 1) =>
+  `<g transform="translate(${x} ${y}) scale(${s})" stroke="${color}" stroke-width="5.5" stroke-linecap="round" fill="none">` +
+  `<circle cx="1" cy="-24" r="6.5" fill="${color}" stroke="none"/>` +
+  `<path d="M0 -16 L-1 4"/><path d="M-1 -13 L-11 -2"/><path d="M-1 -13 L9 -6"/>` +
+  `<path d="M-1 4 L-10 20"/><path d="M-1 4 L8 19"/></g>`;
+
+const bike = (x, y, color, s = 1) =>
+  `<g transform="translate(${x} ${y}) scale(${s})" stroke="${color}" stroke-width="4.5" fill="none" stroke-linecap="round">` +
+  `<circle cx="-17" cy="10" r="12"/><circle cx="17" cy="10" r="12"/>` +
+  `<path d="M-17 10 L-8 -8 L8 -8 L17 10 M-8 -8 L2 10 L-17 10"/>` +
+  `<path d="M8 -8 L5 -14 M0 -14 L10 -14"/><path d="M-8 -8 L-11 -14 M-15 -14 L-7 -14"/></g>`;
+
+const carSide = (x, y, color, s = 1) =>
+  `<g transform="translate(${x} ${y}) scale(${s})">` +
+  `<path d="M-21 4 Q-21 -2 -15 -3 L-9 -4 Q-5 -11 2 -11 L8 -11 Q14 -11 17 -4 Q21 -3 21 2 L21 5 L-21 5 Z" fill="${color}"/>` +
+  `<circle cx="-11" cy="6" r="4.5" fill="${color}"/><circle cx="11" cy="6" r="4.5" fill="${color}"/></g>`;
+
+const moto = (x, y, color, s = 1) =>
+  `<g transform="translate(${x} ${y}) scale(${s})">` +
+  `<circle cx="-14" cy="7" r="7" fill="${color}"/><circle cx="14" cy="7" r="7" fill="${color}"/>` +
+  `<path d="M-16 2 L-6 -6 L2 -6 L6 -2 L16 -2 L16 3 L-4 6 Z" fill="${color}"/>` +
+  `<rect x="9" y="-12" width="4" height="9" fill="${color}" transform="rotate(24 11 -8)"/>` +
+  `<rect x="4" y="-13" width="13" height="4" rx="2" fill="${color}"/></g>`;
+
+const roundaboutArrows = (color) => {
+  let g = '';
+  for (const a of [0, 120, 240]) {
+    g += `<g transform="rotate(${a} 60 62)">` +
+      `<path d="M60 34 A26 26 0 0 1 84.5 51" stroke="${color}" stroke-width="8" fill="none"/>` +
+      `<path d="M88 40 L88 60 L72 49 Z" fill="${color}"/></g>`;
+  }
+  return g;
+};
+
+const trafficLight =
+  `<rect x="47" y="42" width="26" height="52" rx="5" fill="${INK}"/>` +
+  `<circle cx="60" cy="53" r="6" fill="#e03131"/>` +
+  `<circle cx="60" cy="68" r="6" fill="#f5c500"/>` +
+  `<circle cx="60" cy="83" r="6" fill="#22a95c"/>`;
+
+const bentArrow = (mirror, color) =>
+  `<g transform="translate(60 60) scale(${mirror ? -1 : 1} 1)">` +
+  `<path d="M2 30 L2 -2 Q2 -10 -6 -10 L-12 -10 L-12 -1 L-30 -14 L-12 -27 L-12 -19 L-4 -19 Q11 -19 11 -4 L11 30 Z" fill="${color}"/></g>`;
+
+const uTurnLeft =
+  `<g transform="translate(120 0) scale(-1 1)">` +
+  `<path d="M46 90 L46 56 Q46 38 61 38 Q76 38 76 56 L76 62 L85 62 L70 80 L55 62 L64 62 L64 56 Q64 50 61 50 Q58 50 58 56 L58 90 Z" fill="${INK}"/></g>`;
+
+const hand =
+  `<g fill="${WHT}"><rect x="40.5" y="30" width="9" height="36" rx="4.5"/>` +
+  `<rect x="51.5" y="25" width="9" height="40" rx="4.5"/>` +
+  `<rect x="62.5" y="28" width="9" height="38" rx="4.5"/>` +
+  `<rect x="73" y="36" width="8.5" height="30" rx="4.2"/>` +
+  `<path d="M40 66 Q30 58 32 51 Q34 45 40 49 L44 54 Z"/>` +
+  `<path d="M38 60 L82 60 Q84 82 74 90 Q60 100 47 90 Q37 82 38 60 Z"/></g>`;
+
+const curb = (c1, c2) => {
+  let stripes = '';
+  for (let i = 0; i < 6; i++) {
+    stripes += `<rect x="${i * 20}" y="46" width="20" height="26" fill="${i % 2 ? c2 : c1}"/>`;
+  }
+  return `<rect x="0" y="0" width="120" height="46" fill="#c9ced6"/>` + stripes +
+    `<rect x="0" y="72" width="120" height="48" fill="${ASPH}"/>`;
+};
+
+const road = marks => `<rect x="0" y="0" width="120" height="120" fill="${ASPH}"/>` + marks;
+
+const dashes = (x, color, w = 7) => {
+  let d = '';
+  for (let y = 6; y < 120; y += 30) d += `<rect x="${x}" y="${y}" width="${w}" height="18" rx="2" fill="${color}"/>`;
+  return d;
+};
+
+// queue d'aronde (fourche) au départ des flèches de virage israéliennes
+const dovetail = (x, y) => `<path d="M${x - 6} ${y + 2} L${x + 6} ${y + 2} L${x} ${y - 9} Z" fill="${WHT}"/>`;
+
+const SVGS = {};
+
+/* ================= DANGER (1xx + 901) ================= */
+SVGS['chaussee-deformee'] = W(tri(
+  `<path d="M28 91 L37 91 Q45 77 53 91 L60 91 L67 91 Q75 77 83 91 L92 91 L92 96 L28 96 Z" fill="${INK}"/>`));
+SVGS['virage-droite'] = W(tri(
+  `<path d="M52 94 L52 74 Q52 60 66 60 L70 60" stroke="${INK}" stroke-width="9" fill="none"/>` +
+  `<path d="M68 50 L86 60 L68 70 Z" fill="${INK}"/>` + dovetail(52, 96)));
+SVGS['virage-gauche'] = W(tri(
+  `<path d="M68 94 L68 74 Q68 60 54 60 L50 60" stroke="${INK}" stroke-width="9" fill="none"/>` +
+  `<path d="M52 50 L34 60 L52 70 Z" fill="${INK}"/>` + dovetail(68, 96)));
+SVGS['virages'] = W(tri(
+  `<path d="M67 46 L51 60 L69 76 L55 92" stroke="${INK}" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`));
+SVGS['retrecissement'] = W(tri(
+  `<path d="M47 94 Q47 74 53 64 L53 50" stroke="${INK}" stroke-width="7" fill="none"/>` +
+  `<path d="M73 94 Q73 74 67 64 L67 50" stroke="${INK}" stroke-width="7" fill="none"/>`));
+SVGS['dos-dane'] = W(tri(
+  `<path d="M32 91 L47 91 Q60 71 73 91 L88 91 L88 97 L32 97 Z" fill="${INK}"/>`));
+SVGS['glissante'] = W(tri(
+  `<g transform="translate(60 54) rotate(-14)">` +
+  `<path d="M-17 10 L-17 -2 Q-17 -8 -12 -9 L-9 -15 Q-7 -19 -2 -19 L8 -19 Q12 -19 14 -15 L16 -9 Q20 -8 20 -2 L20 10 Q20 13 16 13 L-13 13 Q-17 13 -17 10 Z" fill="${INK}"/>` +
+  `<rect x="-14" y="13" width="8" height="6" fill="${INK}"/><rect x="7" y="13" width="8" height="6" fill="${INK}"/></g>` +
+  `<path d="M38 94 Q46 88 42 82 Q38 76 46 71" stroke="${INK}" stroke-width="4.5" fill="none" stroke-linecap="round"/>` +
+  `<path d="M62 96 Q70 90 66 84 Q62 78 70 73" stroke="${INK}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`));
+SVGS['pietons-avert'] = W(tri(walker(60, 70, INK, 1.1) +
+  `<rect x="36" y="90" width="10" height="5" fill="${INK}"/><rect x="54" y="90" width="10" height="5" fill="${INK}"/><rect x="72" y="90" width="10" height="5" fill="${INK}"/>`));
+SVGS['ecole'] = W(tri(
+  `<g stroke="${INK}" stroke-width="5.5" stroke-linecap="round" fill="none">` +
+  `<circle cx="50" cy="46" r="6.5" fill="${INK}" stroke="none"/>` +
+  `<path d="M50 53 L50 74"/><path d="M50 58 L40 68"/><path d="M50 58 L62 66"/>` +
+  `<path d="M50 74 L42 92"/><path d="M50 74 L57 92"/>` +
+  `<circle cx="72" cy="62" r="5" fill="${INK}" stroke="none"/>` +
+  `<path d="M72 67 L72 80" stroke-width="4.5"/><path d="M72 70 L64 66" stroke-width="4.5"/>` +
+  `<path d="M72 80 L67 92" stroke-width="4.5"/><path d="M72 80 L78 92" stroke-width="4.5"/></g>`));
+SVGS['cyclistes'] = W(tri(bike(60, 76, INK, 0.95)));
+SVGS['feux'] = W(tri(trafficLight));
+SVGS['giratoire-avert'] = W(tri(`<g transform="translate(0 8) scale(0.78) translate(17 12)">${roundaboutArrows(INK)}</g>`));
+SVGS['double-sens'] = W(tri(arrow(50, 72, 0, INK, 0.92) + arrow(70, 72, 180, INK, 0.92)));
+SVGS['descente'] = W(tri(`<path d="M30 94 L90 94 L90 62 Z" fill="${INK}"/>`));
+SVGS['carrefour'] = W(tri(
+  `<g transform="rotate(45 60 71)"><path d="M55 48 L65 48 L65 66 L83 66 L83 76 L65 76 L65 94 L55 94 L55 76 L37 76 L37 66 L55 66 Z" fill="${INK}"/></g>`));
+SVGS['inter-t'] = W(tri(
+  `<rect x="55" y="46" width="11" height="48" fill="${INK}"/>` +
+  `<rect x="66" y="62" width="20" height="8" fill="${INK}"/>`));
+SVGS['passage-niveau'] = W(tri(
+  `<rect x="36" y="60" width="42" height="18" rx="3" fill="${INK}"/>` +
+  `<rect x="74" y="48" width="14" height="30" rx="2" fill="${INK}"/>` +
+  `<rect x="42" y="50" width="7" height="12" fill="${INK}"/>` +
+  `<circle cx="46" cy="42" r="4" fill="${INK}"/><circle cx="54" cy="37" r="5" fill="${INK}"/>` +
+  `<circle cx="44" cy="85" r="6" fill="${INK}"/><circle cx="60" cy="85" r="6" fill="${INK}"/><circle cx="78" cy="85" r="6" fill="${INK}"/>`));
+SVGS['tram'] = W(tri(
+  `<path d="M56 40 L66 48 M66 40 L56 48" stroke="${INK}" stroke-width="3"/>` +
+  `<rect x="40" y="48" width="40" height="4" fill="${INK}"/>` +
+  `<rect x="38" y="52" width="44" height="34" rx="5" fill="${INK}"/>` +
+  `<rect x="44" y="58" width="9" height="10" fill="${WHT}"/><rect x="56" y="58" width="9" height="10" fill="${WHT}"/><rect x="68" y="58" width="8" height="10" fill="${WHT}"/>` +
+  `<rect x="34" y="90" width="52" height="4" fill="${INK}"/>`));
+SVGS['balise-pn'] = W(
+  `<rect x="41" y="24" width="38" height="74" rx="4" fill="${WHT}" stroke="#b8bec7" stroke-width="2"/>` +
+  `<path d="M41 46 L79 30 L79 40 L41 56 Z" fill="${RED}"/>` +
+  `<path d="M41 68 L79 52 L79 62 L41 78 Z" fill="${RED}"/>` +
+  `<path d="M41 90 L79 74 L79 84 L41 96 Z" fill="${RED}"/>`);
+SVGS['croix-pn'] = W(
+  `<g transform="rotate(24 60 60)"><rect x="10" y="51" width="100" height="18" rx="4" fill="${WHT}" stroke="${RED}" stroke-width="4"/></g>` +
+  `<g transform="rotate(-24 60 60)"><rect x="10" y="51" width="100" height="18" rx="4" fill="${WHT}" stroke="${RED}" stroke-width="4"/></g>`);
+SVGS['stop-ahead'] = W(tri(
+  `<path d="M50 50 H70 L83 63 V83 L70 96 H50 L37 83 V63 Z" fill="${INK}"/>`));
+SVGS['chameau'] = W(tri(
+  `<path d="M35 72 L35 62 Q35 58 41 58 L47 58 Q55 46 63 58 L70 58 L72 44 Q73 37 78 37 L81 39 L87 41 L82 45 L77 46 L76 58 Q83 60 83 68 L83 72 Z" fill="${INK}"/>` +
+  `<rect x="37" y="70" width="5" height="22" fill="${INK}"/><rect x="47" y="70" width="5" height="22" fill="${INK}"/>` +
+  `<rect x="68" y="70" width="5" height="22" fill="${INK}"/><rect x="77" y="70" width="5" height="22" fill="${INK}"/>`));
+SVGS['chutes-pierres'] = W(tri(
+  `<path d="M40 44 L48 52 L42 60 L50 68 L44 76 L52 84 L46 94 L34 94 L34 44 Z" fill="${INK}"/>` +
+  `<rect x="58" y="56" width="9" height="9" rx="2" fill="${INK}" transform="rotate(20 62 60)"/>` +
+  `<rect x="70" y="70" width="10" height="10" rx="2" fill="${INK}" transform="rotate(-15 75 75)"/>` +
+  `<rect x="60" y="84" width="9" height="9" rx="2" fill="${INK}" transform="rotate(30 64 88)"/>` +
+  `<rect x="78" y="88" width="8" height="8" rx="2" fill="${INK}" transform="rotate(10 82 92)"/>`));
+SVGS['travaux'] = W(tri(
+  `<g stroke="${INK}" stroke-width="5" stroke-linecap="round" fill="none">` +
+  `<circle cx="56" cy="46" r="6" fill="${INK}" stroke="none"/>` +
+  `<path d="M55 52 L52 72"/><path d="M54 58 L74 66 L84 60"/><path d="M52 72 L42 92"/><path d="M52 72 L62 90"/></g>` +
+  `<path d="M80 56 L92 78 L72 70 Z" fill="${INK}"/>` +
+  `<path d="M30 92 Q40 86 50 92 Q58 96 66 92" stroke="${INK}" stroke-width="4" fill="none"/>`));
+SVGS['danger'] = W(tri(
+  `<rect x="55" y="46" width="10" height="32" rx="4" fill="${INK}"/>` +
+  `<circle cx="60" cy="90" r="6" fill="${INK}"/>`));
+SVGS['chevrons'] = W(
+  `<rect x="4" y="34" width="112" height="52" rx="6" fill="${INK}"/>` +
+  `<path d="M22 42 L44 60 L22 78 L32 78 L54 60 L32 42 Z" fill="${WHT}"/>` +
+  `<path d="M52 42 L74 60 L52 78 L62 78 L84 60 L62 42 Z" fill="${WHT}"/>` +
+  `<path d="M82 42 L104 60 L82 78 L92 78 L114 60 L92 42 Z" fill="${WHT}" transform="translate(-6 0)"/>`);
+
+/* ================= PRIORITÉ (3xx) ================= */
+SVGS['cedez'] = W(triInv);
+SVGS['stop'] = W(octagon + hand);
+SVGS['giratoire'] = W(blueDisc(`<g transform="translate(60 62) scale(0.86) translate(-60 -62)">${roundaboutArrows(WHT)}</g>`));
+SVGS['passage-pietons-ind'] = W(blueSq(
+  `<path d="M60 20 L104 96 L16 96 Z" fill="${WHT}"/>` + walker(60, 66, INK, 1.0) +
+  `<rect x="46" y="88" width="9" height="4" fill="${INK}"/><rect x="58" y="88" width="9" height="4" fill="${INK}"/><rect x="70" y="88" width="9" height="4" fill="${INK}"/>`));
+SVGS['ceder-face'] = W(ring(arrow(48, 60, 180, INK, 1.1) + arrow(72, 60, 0, RED, 1.1)));
+SVGS['priorite-face'] = W(blueSq(arrow(74, 60, 0, WHT, 1.25) + arrow(46, 60, 180, RED, 1.25)));
+SVGS['route-prioritaire'] = W(
+  `<rect x="14" y="14" width="92" height="92" rx="8" fill="${WHT}" transform="rotate(45 60 60)"/>` +
+  `<rect x="28" y="28" width="64" height="64" rx="4" fill="${YEL}" stroke="#c9a300" stroke-width="1.5" transform="rotate(45 60 60)"/>`);
+SVGS['fin-priorite'] = W(
+  `<rect x="14" y="14" width="92" height="92" rx="8" fill="${WHT}" transform="rotate(45 60 60)"/>` +
+  `<rect x="28" y="28" width="64" height="64" rx="4" fill="${YEL}" stroke="#c9a300" stroke-width="1.5" transform="rotate(45 60 60)"/>` +
+  `<rect x="12" y="54" width="96" height="12" fill="#5c6b7a" transform="rotate(45 60 60)"/>`);
+
+/* ================= INTERDICTION (4xx) ================= */
+SVGS['route-fermee'] = W(ring(''));
+SVGS['sens-interdit'] = W(
+  `<circle cx="60" cy="60" r="56" fill="${RED}"/>` +
+  `<rect x="22" y="52.5" width="76" height="15" rx="3" fill="${WHT}"/>`);
+SVGS['interdit-moteur'] = W(ring(carSide(60, 48, INK, 1.0) + moto(60, 84, INK, 1.0)));
+SVGS['interdit-droite'] = W(ringSlash(bentArrow(true, INK)));
+SVGS['interdit-gauche'] = W(ringSlash(bentArrow(false, INK)));
+SVGS['demi-tour-interdit'] = W(ringSlash(uTurnLeft));
+SVGS['depassement-interdit'] = W(ring(carSide(41, 60, RED, 1.05) + carSide(80, 60, INK, 1.05)));
+SVGS['vitesse-50'] = W(ring(
+  `<text x="60" y="78" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="52" font-weight="bold" fill="${INK}">50</text>`));
+SVGS['fin-vitesse'] = W(
+  `<circle cx="60" cy="60" r="56" fill="${WHT}" stroke="${GRY}" stroke-width="3"/>` +
+  `<text x="60" y="78" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="50" font-weight="bold" fill="#7b828c">50</text>` +
+  `<rect x="10" y="55" width="100" height="10" fill="${GRY}" transform="rotate(45 60 60)"/>`);
+SVGS['stationnement-interdit'] = W(blueRing([45]));
+SVGS['arret-interdit'] = W(blueRing([]) +
+  `<g transform="rotate(45 60 60)"><rect x="17" y="50" width="86" height="20" fill="${RED}"/><rect x="17" y="58.2" width="86" height="3.6" fill="${WHT}"/></g>`);
+
+/* ================= OBLIGATION (2xx) ================= */
+SVGS['tout-droit'] = W(blueDisc(arrow(60, 60, 0, WHT, 1.5)));
+SVGS['oblig-droite'] = W(blueDisc(arrow(60, 60, 90, WHT, 1.5)));
+SVGS['oblig-droite-apres'] = W(blueDisc(bentArrow(true, WHT)));
+SVGS['oblig-gauche'] = W(blueDisc(arrow(60, 60, -90, WHT, 1.5)));
+SVGS['contournement'] = W(blueDisc(arrow(60, 60, 135, WHT, 1.5)));
+SVGS['piste-cyclable'] = W(blueDisc(bike(60, 66, WHT, 1.15)));
+SVGS['chemin-pietons'] = W(blueDisc(walker(60, 62, WHT, 1.35)));
+
+/* ================= INDICATION (2xx/4xx/5xx/6xx) ================= */
+SVGS['sens-unique'] = W(blueSq(arrow(60, 60, 0, WHT, 1.7)));
+SVGS['impasse'] = W(blueSq(
+  `<rect x="53" y="38" width="14" height="58" fill="${WHT}"/>` +
+  `<rect x="36" y="26" width="48" height="14" fill="${RED}"/>`));
+SVGS['parking'] = W(blueSq(
+  `<text x="60" y="80" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="62" font-weight="bold" fill="${WHT}">ח</text>` +
+  `<text x="60" y="98" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="30" font-weight="bold" fill="${WHT}">P</text>`));
+SVGS['autoroute'] = W(blueSq(
+  `<path d="M40 96 L48 34 L52 34 L48 96 Z" fill="${WHT}"/>` +
+  `<path d="M80 96 L72 34 L68 34 L72 96 Z" fill="${WHT}"/>` +
+  `<rect x="24" y="52" width="72" height="10" fill="${WHT}"/>` +
+  `<rect x="28" y="62" width="8" height="8" fill="${WHT}"/><rect x="84" y="62" width="8" height="8" fill="${WHT}"/>`));
+SVGS['fin-autoroute'] = W(blueSq(
+  `<path d="M40 96 L48 34 L52 34 L48 96 Z" fill="${WHT}"/>` +
+  `<path d="M80 96 L72 34 L68 34 L72 96 Z" fill="${WHT}"/>` +
+  `<rect x="24" y="52" width="72" height="10" fill="${WHT}"/>` +
+  `<rect x="28" y="62" width="8" height="8" fill="${WHT}"/><rect x="84" y="62" width="8" height="8" fill="${WHT}"/>` +
+  `<rect x="8" y="54" width="104" height="12" fill="${INK}" transform="rotate(45 60 60)"/>`));
+SVGS['zone-residentielle'] = W(blueSq(
+  walker(40, 52, WHT, 0.95) +
+  `<g stroke="${WHT}" stroke-width="4" stroke-linecap="round" fill="none">` +
+  `<circle cx="76" cy="40" r="5" fill="${WHT}" stroke="none"/>` +
+  `<path d="M76 45 L74 60"/><path d="M75 50 L66 56"/><path d="M75 50 L85 54"/>` +
+  `<path d="M74 60 L66 70"/><path d="M74 60 L82 70"/></g>` +
+  `<circle cx="93" cy="72" r="5" fill="none" stroke="${WHT}" stroke-width="3"/>` +
+  `<path d="M26 92 Q26 84 34 83 L40 82 Q44 76 51 76 L58 76 Q64 76 66 82 Q71 83 71 88 L71 92 Z" fill="${WHT}"/>` +
+  `<circle cx="36" cy="94" r="4.5" fill="${WHT}"/><circle cx="60" cy="94" r="4.5" fill="${WHT}"/>`));
+SVGS['maison-rouge'] = W(ring(
+  `<path d="M38 60 L60 42 L82 60 L82 86 L38 86 Z" fill="${INK}"/>` +
+  `<rect x="54" y="68" width="12" height="18" fill="${WHT}"/>`));
+SVGS['sortie-agglo'] = W(
+  `<circle cx="60" cy="60" r="56" fill="${WHT}" stroke="${INK}" stroke-width="3"/>` +
+  `<path d="M38 60 L60 42 L82 60 L82 86 L38 86 Z" fill="#8d939c"/>` +
+  `<rect x="54" y="68" width="12" height="18" fill="${WHT}"/>` +
+  `<rect x="12" y="54.5" width="96" height="11" fill="${INK}" transform="rotate(45 60 60)"/>`);
+SVGS['voie-bus'] = W(blueSq(
+  `<rect x="20" y="42" width="80" height="34" rx="7" fill="#f5c500"/>` +
+  `<rect x="27" y="48" width="15" height="12" rx="2" fill="${BLUE}"/><rect x="46" y="48" width="15" height="12" rx="2" fill="${BLUE}"/><rect x="65" y="48" width="15" height="12" rx="2" fill="${BLUE}"/><rect x="84" y="48" width="10" height="12" rx="2" fill="${BLUE}"/>` +
+  `<circle cx="36" cy="80" r="7" fill="${WHT}"/><circle cx="84" cy="80" r="7" fill="${WHT}"/>` +
+  `<rect x="24" y="92" width="72" height="7" rx="3.5" fill="${WHT}"/>`));
+
+/* ================= MARQUAGE & BORDURES (8xx/9xx) ================= */
+SVGS['ligne-discontinue'] = W(road(dashes(56, WHT, 8)));
+SVGS['ligne-continue'] = W(road(
+  `<rect x="49" y="0" width="6" height="120" fill="${WHT}"/><rect x="63" y="0" width="6" height="120" fill="${WHT}"/>`));
+SVGS['ligne-mixte'] = W(road(
+  `<rect x="50" y="0" width="6" height="120" fill="${WHT}"/>` + dashes(63, WHT, 6)));
+SVGS['ligne-jaune'] = W(road(`<rect x="14" y="0" width="7" height="120" fill="${YEL}"/>`));
+SVGS['ligne-orange'] = W(road(dashes(40, WHT, 7) + dashes(70, ORG, 7)));
+SVGS['ligne-arret'] = W(road(
+  `<rect x="0" y="66" width="120" height="14" fill="${WHT}"/>` +
+  `<rect x="10" y="20" width="14" height="34" fill="${WHT}"/><rect x="38" y="20" width="14" height="34" fill="${WHT}"/><rect x="66" y="20" width="14" height="34" fill="${WHT}"/><rect x="94" y="20" width="14" height="34" fill="${WHT}"/>`));
+SVGS['bordure-rouge-blanc'] = W(curb(RED, WHT));
+SVGS['bordure-bleu-blanc'] = W(curb(BLUE, WHT));
+SVGS['bordure-rouge-jaune'] = W(curb(RED, YEL));
+SVGS['bordure-noir-blanc'] = W(curb('#22262b', WHT));
+SVGS['bordure-grise'] = W(curb('#8d939c', '#8d939c'));
+
+// --- sorties ---
+const ids = Object.keys(SVGS);
+const COLS = 8, CELL = 150;
+const rows = Math.ceil(ids.length / COLS);
+let grid = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${COLS * CELL} ${rows * CELL}" width="${COLS * CELL}" height="${rows * CELL}">` +
+  `<rect width="100%" height="100%" fill="#e9edf2"/>`;
+ids.forEach((id, i) => {
+  const x = (i % COLS) * CELL, y = Math.floor(i / COLS) * CELL;
+  const inner = SVGS[id].replace('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">', '').replace('</svg>', '');
+  grid += `<g transform="translate(${x + 15} ${y + 8})"><g transform="scale(0.9)">${inner}</g>` +
+    `<text x="60" y="130" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#333">${id}</text></g>`;
+});
+grid += '</svg>';
+fs.writeFileSync(__dirname + '/preview.svg', grid);
+fs.writeFileSync(__dirname + '/signs-svg.json', JSON.stringify(SVGS, null, 1));
+console.log('OK —', ids.length, 'panneaux générés');
