@@ -16,6 +16,9 @@ const META = [
 {id:'virage-gauche', cat:'danger', num:'103', name:'Virage serré à gauche', short:'Virage serré à gauche',
  sens:"Virage serré vers la gauche devant toi : ralentis avant d'y entrer.",
  tip:"102 = droite, 103 = gauche. Regarde bien la direction de la pointe de la flèche."},
+{id:'double-virage', cat:'danger', num:'104', name:'Double virage (le premier à droite)', short:'Deux virages, le premier à droite',
+ sens:"Deux virages successifs : d'abord à droite, puis à gauche. Le 105 est son miroir (d'abord à gauche).",
+ tip:"Le premier coude de la flèche = le PREMIER virage — c'est LE piège de cette série. Exactement deux virages ; au-delà, c'est le 106."},
 {id:'virages', cat:'danger', num:'106', name:'Route sinueuse', short:'Succession de virages',
  sens:"Succession de virages devant toi : adapte ta vitesse sur toute la section.",
  tip:"104/105 = exactement DEUX virages (le premier coude de la flèche donne le sens du premier virage — piège classique). 106 = plus de deux."},
@@ -42,7 +45,7 @@ const META = [
  tip:"Seul panneau d'avertissement israélien dont le pictogramme est en COULEUR (rouge-jaune-vert), pas en noir."},
 {id:'giratoire-avert', cat:'danger', num:'121', name:'Rond-point à l\'approche', short:'Rond-point plus loin',
  sens:"Un rond-point se trouve au prochain carrefour : ralentis à l'approche.",
- tip:"Piège n°1 : 121 (triangle) AVERTIT à distance ; 303 (rond bleu) est planté AU giratoire et OBLIGE à céder à ceux qui y circulent."},
+ tip:"Piège n° 1 : 121 (triangle) AVERTIT à distance ; 303 (rond bleu) est planté AU giratoire et OBLIGE à céder à ceux qui y circulent."},
 {id:'double-sens', cat:'danger', num:'145', name:'Circulation à double sens', short:'Route à double sens',
  sens:"La route devient bidirectionnelle (souvent après un sens unique ou des chaussées séparées) : serre à droite.",
  tip:"Réflexe attendu au QCM : serrer à droite et ne pas dépasser sans visibilité — du trafic arrive désormais en face."},
@@ -63,7 +66,7 @@ const META = [
  tip:"128 = tram moderne avec pantographe ; 129 = train « lourd » (locomotive à vapeur). Deux panneaux différents."},
 {id:'balise-pn', cat:'danger', num:'130-132', name:'Balises avant passage à niveau', short:'Décompte avant la voie ferrée',
  sens:"Balises de distance avant un passage à niveau : 3 bandes ≈ 300 m, 2 bandes ≈ 200 m, 1 bande ≈ 100 m.",
- tip:"Question type : « combien de mètres restent-ils ? » — le nombre de bandes rouges × 100 m."},
+ tip:"Question type : « combien de mètres reste-t-il ? » — le nombre de bandes rouges × 100 m."},
 {id:'croix-pn', cat:'danger', num:'133', name:'Croix de Saint-André', short:'Emplacement du passage à niveau',
  sens:"Tu es À l'emplacement même du passage à niveau (une seule voie ferrée). La croix double (134) = plusieurs voies.",
  tip:"129 avertit À L'AVANCE, 133/134 marquent L'ENDROIT. Croix double : attention, un second train peut suivre le premier !"},
@@ -73,8 +76,8 @@ const META = [
 {id:'chameau', cat:'danger', num:'146', name:'Animaux (chameau)', short:'Animaux sur la route',
  sens:"Des animaux peuvent traverser : gazelles, ou chameaux sur les routes du Néguev et de l'Arava.",
  tip:"La variante chameau est une célébrité de l'examen israélien — les deux pictogrammes (cervidé et chameau) partagent le numéro 146."},
-{id:'chutes-pierres', cat:'danger', num:'142', name:'Chutes de pierres', short:'Éboulements possibles',
- sens:"Risque de pierres éboulées sur la chaussée, tombant du côté indiqué (142 = droite, 143 = gauche).",
+{id:'chutes-pierres', cat:'danger', num:'142-143', name:'Chutes de pierres', short:'Éboulements possibles',
+ sens:"Risque de pierres éboulées sur la chaussée. Deux variantes selon le côté du talus : 142 (droite) et 143 (gauche).",
  tip:"Le QCM peut demander de quel CÔTÉ vient le danger : deux numéros distincts selon le côté."},
 {id:'travaux', cat:'danger', num:'901', name:'Travaux (chantier)', short:'Zone de chantier',
  sens:"Début d'une zone de travaux sur la route, valable jusqu'au panneau de fin de chantier (902).",
@@ -82,9 +85,9 @@ const META = [
 {id:'danger', cat:'danger', num:'150', name:'Danger non spécifié', short:'Danger (nature non précisée)',
  sens:"Endroit dangereux pour lequel aucun panneau spécifique n'existe : redouble de prudence.",
  tip:"Réponse type au QCM : « danger dont la nature n'est pas précisée ». Ses voisins : 151 (accident), 152 (vent latéral)."},
-{id:'chevrons', cat:'danger', num:'108', name:'Chevrons de virage', short:'La route tourne — suis les chevrons',
+{id:'chevrons', cat:'danger', num:'107-108', name:'Chevrons de virage', short:'La route tourne — suis les chevrons',
  sens:"Guidage dans un virage serré : la route continue dans la direction des flèches. Passe DEVANT le panneau.",
- tip:"En Israël les chevrons sont NOIR et BLANC (pas rouge/blanc comme en France), et ils appartiennent au groupe avertissement malgré leur forme rectangulaire."},
+ tip:"En Israël, les chevrons sont NOIR et BLANC (pas rouge/blanc comme en France), et ils appartiennent au groupe avertissement malgré leur forme rectangulaire."},
 
 // ---------- PRIORITÉ ----------
 {id:'cedez', cat:'priorite', num:'301', name:'Cédez le passage', short:'Céder le passage',
@@ -92,7 +95,7 @@ const META = [
  tip:"Différence clé avec le STOP : ici, l'arrêt n'est obligatoire que si nécessaire. Seul panneau en triangle pointe en bas — reconnaissable même couvert de neige ou de poussière."},
 {id:'stop', cat:'priorite', num:'302', name:'STOP (עצור)', short:'Arrêt complet obligatoire',
  sens:"Arrêt COMPLET obligatoire, même si tout est libre, puis cède la priorité à la circulation transversale.",
- tip:"Le STOP israélien = octogone rouge avec une MAIN blanche, sans aucun texte. Implanté à gauche de la chaussée, il ne vaut que pour le tourne-à-gauche ; au-dessus d'une voie, que pour cette voie."},
+ tip:"Le STOP israélien = octogone rouge avec une MAIN blanche, sans aucun texte. Implanté à gauche de la chaussée, il ne vaut que pour le tourne-à-gauche et le demi-tour à gauche ; au-dessus d'une voie, que pour cette voie."},
 {id:'giratoire', cat:'priorite', num:'303', name:'Carrefour giratoire', short:'Rond-point : céder à l\'anneau',
  sens:"Cède la priorité à la circulation déjà engagée dans l'anneau et contourne l'îlot par la droite.",
  tip:"Ce panneau unique cumule TROIS fonctions : annonce + céder le passage + contourner par la droite. La priorité est à ceux qui viennent de ta gauche, déjà dans l'anneau."},
@@ -156,19 +159,19 @@ const META = [
  tip:"Paire piège 204/206 : flèche HORIZONTALE = tourner avant le panneau ; flèche COUDÉE = tourner après. Idem 205/207 à gauche."},
 {id:'oblig-droite-apres', cat:'obligation', num:'206', name:'À droite APRÈS le panneau', short:'Tourner à droite après le panneau',
  sens:"Tourne à droite — vire APRÈS le panneau.",
- tip:"Question récurrente : « où tournez-vous ? » — la forme de la flèche (droite vs coudée) donne la réponse."},
+ tip:"Question récurrente : « où faut-il tourner ? » — la forme de la flèche (droite vs coudée) donne la réponse."},
 {id:'oblig-gauche', cat:'obligation', num:'205', name:'À gauche AVANT le panneau', short:'Tourner à gauche avant le panneau',
  sens:"Tourne à gauche — vire avant le panneau.",
  tip:"Le 207 (flèche coudée) impose de tourner APRÈS le panneau."},
 {id:'contournement', cat:'obligation', num:'214', name:'Contournement par la droite', short:'Passer à droite de l\'obstacle',
  sens:"Franchis l'endroit signalé (îlot, obstacle, chantier) par son côté DROIT.",
  tip:"215 = miroir (par la gauche) ; 213 (deux flèches) = passage permis des DEUX côtés — à ne pas confondre."},
-{id:'piste-cyclable', cat:'obligation', num:'', name:'Piste cyclable', short:'Voie réservée aux vélos',
- sens:"Chemin réservé aux cyclistes : interdit aux autres véhicules et aux piétons s'il existe un trottoir.",
- tip:"Rond bleu = obligation/réservation. En Israël, les trottinettes électriques doivent aussi utiliser la piste cyclable quand elle existe."},
-{id:'chemin-pietons', cat:'obligation', num:'', name:'Chemin piétons', short:'Réservé aux piétons',
- sens:"Chemin réservé aux piétons : interdit aux véhicules, y compris vélos.",
- tip:"À distinguer du 306 (carré bleu, priorité aux piétons au passage) : ici c'est un CHEMIN entier réservé."},
+{id:'piste-cyclable', cat:'obligation', num:'227', name:'Chemin pour vélos', short:'Chemin réservé aux vélos',
+ sens:"Chemin réservé à la circulation des vélos (« אופניים » au sens du catalogue : vélos, y compris à assistance électrique). Valable jusqu'au prochain carrefour.",
+ tip:"La même série contient le 226 (chemin piétons), le 228 (chemin PARTAGÉ piétons-vélos) et le 229 (chemins séparés côte à côte) — distinctions testées au QCM."},
+{id:'chemin-pietons', cat:'obligation', num:'226', name:'Chemin pour piétons', short:'Chemin réservé aux piétons',
+ sens:"Chemin réservé aux piétons uniquement. Valable jusqu'au prochain carrefour.",
+ tip:"À distinguer du 306 (carré bleu, priorité aux piétons au passage) : ici c'est un CHEMIN entier réservé. Voir aussi 228 (partagé) et 229 (séparés)."},
 
 // ---------- INDICATION ----------
 {id:'sens-unique', cat:'indication', num:'618', name:'Sens unique', short:'Rue à sens unique',
@@ -178,7 +181,7 @@ const META = [
  sens:"La route devant toi est sans issue. Les variantes 624/625 signalent une impasse dans la rue latérale droite/gauche.",
  tip:"Si le T est déporté sur le côté du panneau, l'impasse concerne la rue LATÉRALE, pas la tienne."},
 {id:'parking', cat:'indication', num:'626', name:'Stationnement autorisé (חניה)', short:'Stationnement autorisé',
- sens:"Stationnement autorisé — sauf aux arrêts de bus, et là où bordures rouge-blanc ou panneaux d'interdiction s'appliquent.",
+ sens:"Stationnement autorisé — sauf aux arrêts de bus, et là où des bordures rouge-blanc ou des panneaux d'interdiction s'appliquent.",
  tip:"Le panneau porte le monogramme ח + P (ח = initiale de חניה, le stationnement). Une bordure rouge-blanc ANNULE l'autorisation du 626."},
 {id:'autoroute', cat:'indication', num:'216', name:'Début d\'autoroute', short:'Entrée d\'autoroute',
  sens:"Début d'autoroute : interdite aux piétons, vélos, animaux et à tout véhicule ne pouvant rouler à au moins 60 km/h.",
@@ -197,7 +200,7 @@ const META = [
  tip:"Après le 425 : 80 km/h par défaut sur route interurbaine (90 avec séparateur central), sauf signalisation."},
 {id:'voie-bus', cat:'indication', num:'501', name:'Voie réservée aux transports publics', short:'Voie bus (נת\"צ)',
  sens:"Voie réservée : les pictogrammes indiquent qui peut y rouler. Arrêt et stationnement interdits dans la voie.",
- tip:"Nuance très testée : bus JAUNE = seulement les bus de LIGNE ; bus BLANC = tous les autobus. Sans panonceau d'horaires, la réservation vaut 24h/24. Au sol : lignes jaunes + losanges."},
+ tip:"Nuance très testée : bus JAUNE = seulement les bus de LIGNE ; bus BLANC = tous les autobus. Sans panonceau d'horaires, la réservation vaut 24 h/24. Au sol : lignes jaunes + losanges."},
 
 // ---------- MARQUAGE & BORDURES ----------
 {id:'ligne-discontinue', cat:'marquage', num:'801', name:'Ligne discontinue', short:'Franchissable pour dépasser',
@@ -246,7 +249,7 @@ const LESSONS = [
 <tr><td>🔻 Triangle pointe en bas</td><td><b>Cédez le passage</b> (301)</td><td>Le seul de sa forme — reconnaissable même sale</td></tr>
 <tr><td>🛑 Octogone rouge + main blanche</td><td><b>STOP</b> (302)</td><td>Spécificité israélienne : une main, pas de texte</td></tr>
 <tr><td>🔴 Rond, bordure rouge</td><td><b>Interdiction</b> (série 400)</td><td>Vitesse, sens interdit, dépassement…</td></tr>
-<tr><td>🔵 Rond bleu</td><td><b>Obligation</b> (série 200)</td><td>Tout droit, contournement, rond-point…</td></tr>
+<tr><td>🔵 Rond bleu</td><td><b>Obligation</b> (série 200)</td><td>Tout droit, à droite, contournement… (exception : le 303 « giratoire », rond bleu mais classé priorité)</td></tr>
 <tr><td>🟦 Carré / rectangle bleu</td><td><b>Indication</b></td><td>Sens unique, parking ח, impasse…</td></tr>
 <tr><td>🟡 Losange jaune</td><td><b>Route prioritaire</b> (309)</td><td>Tu as la priorité jusqu'au prochain carrefour</td></tr>
 </table>
@@ -260,9 +263,10 @@ const LESSONS = [
 <li>🔴 <b>Rouge</b> : arrêt complet avant la ligne d'arrêt.</li>
 <li>🔴🟡 <b>Rouge + jaune ensemble</b> : « prépare-toi à démarrer » — mais il est <b>interdit de passer</b> tant que le vert n'est pas allumé.</li>
 <li>🟢 <b>Vert</b> : passe — si le carrefour peut être dégagé.</li>
-<li>🟢✨ <b>Vert clignotant</b> : le vert clignote <b>3 fois pendant les 3 dernières secondes</b> avant le jaune. Il n'existe que sur les routes où la vitesse autorisée dépasse <b>60 km/h</b>. Juridiquement c'est encore un feu vert.</li>
-<li>🟡 <b>Jaune</b> : arrête-toi, sauf si tu es trop engagé pour t'arrêter en sécurité.</li>
+<li>🟢✨ <b>Vert clignotant</b> : le vert clignote <b>3 fois pendant les 3 dernières secondes</b> avant le jaune. Il n'existe que sur les routes où la vitesse autorisée dépasse <b>60 km/h</b>. Juridiquement, c'est encore un feu vert.</li>
+<li>🟡 <b>Jaune</b> : arrête-toi, sauf si tu es trop engagée pour t'arrêter en sécurité.</li>
 </ul>
+<div class="keyfact">👮 <b>Hiérarchie des instructions</b> (question archi-classique) : policier / signaleur &gt; feux (sauf jaune clignotant) &gt; panneaux temporaires de chantier &gt; panneaux fixes &gt; marquage au sol. En cas de contradiction, la source la plus haute gagne.</div>
 <div class="keyfact">🟡 <b>Jaune clignotant</b> = le feu est <b>hors service</b> : avance avec prudence en suivant les panneaux et les règles de priorité.</div>
 <div class="keyfact">📏 Les instructions d'un <b>feu</b> priment sur les <b>panneaux</b> — SAUF quand le feu est en jaune clignotant.</div>
 <div class="warnfact">🚫 Interdit d'entrer dans un carrefour (même au vert !) si tu ne peux pas le <b>traverser et le dégager entièrement</b>.</div>`},
@@ -278,6 +282,7 @@ const LESSONS = [
 </ul>
 <h4>Véhicules d'urgence (רכב ביטחון)</h4>
 <p>Police, ambulance, pompiers ou Tsahal avec sirène et gyrophare : <b>range-toi le plus à droite possible, hors du carrefour, et ARRÊTE-toi</b> jusqu'à leur passage. Interdiction de suivre un véhicule d'urgence à moins de 100 m.</p>
+<div class="keyfact">🚧 <b>Signaleur de chantier</b> : devant le panneau mobile 304 (STOP à main, version ronde portative), reste à l'arrêt jusqu'à son autorisation ou jusqu'au panneau 305 « avance avec prudence » — pas simplement quand la voie te semble libre.</div>
 <h4>Piétons</h4>
 <ul>
 <li>Passage piétons : laisse les piétons engagés <b>terminer leur traversée</b>, arrête-toi si nécessaire.</li>
@@ -292,7 +297,7 @@ const LESSONS = [
 <tr><th>Type de route</th><th>Par défaut</th><th>Max si signalé</th></tr>
 <tr><td>Agglomération (après le panneau « maison » 424)</td><td><b>50</b> km/h</td><td>80</td></tr>
 <tr><td>Route interurbaine sans séparation</td><td><b>80</b> km/h</td><td>100</td></tr>
-<tr><td>Route interurbaine avec séparation construite</td><td><b>90</b> km/h</td><td>110</td></tr>
+<tr><td>Route interurbaine avec séparation construite</td><td><b>90</b> km/h</td><td>110 (si 2 voies par sens)</td></tr>
 <tr><td>Autoroute (דרך מהירה)</td><td><b>110</b> km/h</td><td>120</td></tr>
 </table>
 <p class="muted">Route 6 (péage) : 110 sur la majorité du tracé, 120 sur la section centrale — suis la signalisation.</p>
@@ -349,6 +354,7 @@ const LESSONS = [
 <h4>Phares et gilet</h4>
 <ul>
 <li>Du <b>1er novembre au 31 mars</b> : feux de croisement allumés <b>de jour</b> sur route <b>interurbaine</b> (motos : toute l'année).</li>
+<li>La nuit : feux de route permis hors agglomération, mais <b>repasse en feux de croisement</b> dès qu'un véhicule arrive en face ou te précède. Si tu es éblouie : ralentis et guide-toi sur le bord droit de la chaussée.</li>
 <li><b>Gilet réfléchissant</b> : obligatoire dans l'habitacle, et à porter dès qu'on sort du véhicule sur route <b>non urbaine</b>.</li>
 </ul>`},
 
@@ -374,8 +380,9 @@ const LESSONS = [
 <ul>
 <li>Banque officielle : gov.il (מאגר השאלות) — interface hébreu/anglais.</li>
 <li><b>En français : meteoria.co.il</b> propose les questions officielles traduites (aussi : test4u.co.il, easyteo.co.il, testil.com en hébreu).</li>
+<li>⚠️ La banque officielle contient aussi des questions de <b>connaissance du véhicule</b> (pneus, freins, rétroviseurs…) — cette app en donne un aperçu dans le quiz théorie, complète avec les simulations.</li>
 </ul>
-<p class="muted">Titulaires d'un permis étranger : la conversion se fait normalement SANS examen théorique (permis ≥ 5 ans : sur documents ; &lt; 5 ans : test pratique de contrôle). La théorie n'est exigée qu'après deux échecs au pratique — ou pour un premier permis.</p>`},
+<p class="muted">Titulaires d'un permis étranger : la conversion se fait normalement SANS examen théorique (permis ≥ 5 ans : sur documents ; &lt; 5 ans : test pratique de contrôle). La théorie n'est exigée qu'après deux échecs à l'épreuve pratique — ou pour un premier permis.</p>`},
 ];
 
 /* ============ QUESTIONS THÉORIE ============ */
@@ -412,7 +419,7 @@ const QUESTIONS = [
  explain:"Le minimum légal (règle 49) est de 1 seconde ; le standard enseigné est 2 secondes, et 3 par mauvais temps."},
 {q:"Limite d'alcoolémie pour un NOUVEAU conducteur ou un conducteur de moins de 24 ans :",
  choices:["50 µg par litre d'air expiré (quasi zéro)","240 µg par litre d'air expiré","Un verre de vin autorisé","Aucune limite spécifique"], answer:0,
- explain:"Jeunes (<24 ans), nouveaux conducteurs et professionnels : 50 µg/L — la limite générale est de 240 µg/L (≈0,05 %)."},
+ explain:"Jeunes (moins de 24 ans), nouveaux conducteurs et professionnels : 50 µg/L — la limite générale est de 240 µg/L (≈ 0,05 %)."},
 {q:"Un enfant de 5 ans doit voyager :",
  choices:["Dans un siège ou rehausseur adapté","Avec la ceinture seule à l'arrière","Sur les genoux d'un adulte ceinturé","À l'avant obligatoirement"], answer:0,
  explain:"De 3 à 8 ans : siège enfant ou rehausseur. Ceinture seule à partir de 8 ans."},
@@ -424,7 +431,7 @@ const QUESTIONS = [
  explain:"Seul le mains libres (דיבורית) avec téléphone fixé est autorisé. Tenir ou manipuler le téléphone : 1 000 ₪ et 8 points."},
 {q:"En hiver, les feux de croisement de jour sont obligatoires :",
  choices:["Du 1er novembre au 31 mars, sur route interurbaine","Toute l'année, partout","Seulement quand il pleut","Du 1er décembre au 28 février"], answer:0,
- explain:"Règle 97 : du 1.11 au 31.3, feux allumés de jour hors agglomération (motos : toute l'année)."},
+ explain:"Règle 97 : du 1er novembre au 31 mars, feux allumés de jour hors agglomération (motos : toute l'année)."},
 {q:"Une bordure de trottoir peinte ROUGE et BLANC signifie :",
  choices:["Arrêt ET stationnement interdits","Stationnement payant","Arrêt permis 5 minutes","Réservé aux résidents"], answer:0,
  explain:"Rouge-blanc = ni arrêt ni stationnement. C'est LE grand classique de l'examen."},
@@ -444,14 +451,14 @@ const QUESTIONS = [
  choices:["Une moto ou un vélo","Un camion lent","Un bus","Rien du tout"], answer:0,
  explain:"L'interdiction vise les véhicules « à plus de deux roues » : dépasser un deux-roues reste permis."},
 {q:"La ligne JAUNE continue au bord droit de la chaussée :",
- choices:["Délimite l'accotement — roule à sa gauche","Sépare les deux sens de circulation","Interdit le stationnement","Réservée aux bus"], answer:0,
+ choices:["Délimite l'accotement — roule à sa gauche","Sépare les deux sens de circulation","Interdit le stationnement","Réserve la voie aux bus"], answer:0,
  explain:"En Israël, la ligne jaune de rive délimite l'accotement (שול). Ce n'est PAS une séparation de sens."},
 {q:"En zone de travaux, un marquage ORANGE contredit le marquage blanc. Tu suis :",
  choices:["Le marquage orange","Le marquage blanc","Le plus restrictif des deux","Aucun : tu t'arrêtes"], answer:0,
  explain:"Le marquage temporaire orange PRIME sur le marquage permanent blanc en zone de chantier."},
 {q:"Au panneau STOP israélien (main levée), tu dois :",
  choices:["T'arrêter complètement, même si la voie est totalement libre","Ralentir et passer si c'est libre","T'arrêter seulement si un véhicule arrive","Céder uniquement aux piétons"], answer:0,
- explain:"Le STOP exige un arrêt complet dans tous les cas, puis on cède la priorité. Le « cédez » (301) permet lui de passer sans arrêt si c'est libre."},
+ explain:"Le STOP exige un arrêt complet dans tous les cas, puis on cède la priorité. Le « cédez le passage » (301) permet, lui, de passer sans marquer l'arrêt si la voie est libre."},
 {q:"Un panneau interdit de tourner à gauche (429). Le demi-tour à gauche est :",
  choices:["Permis, sauf panneau 431, marquage contraire ou panneau monté sur un feu","Interdit aussi, toujours","Permis uniquement de nuit","Interdit sauf pour les taxis"], answer:0,
  explain:"Gros piège officiel : 429 seul n'interdit PAS le demi-tour. Il faut un 430/431 (ou un 429 au-dessus d'un feu) pour l'interdire."},
@@ -460,7 +467,7 @@ const QUESTIONS = [
  explain:"L'autoroute est interdite aux piétons, vélos, animaux et à tout véhicule ne pouvant rouler à 60 km/h minimum."},
 {q:"Dans une rue résidentielle partagée (panneau 220), les piétons :",
  choices:["Peuvent utiliser toute la largeur de la rue","Doivent rester sur le trottoir","Sont interdits sur la chaussée","N'ont priorité qu'aux passages"], answer:0,
- explain:"Dans un רחוב משולב, les piétons (et les enfants qui jouent) peuvent utiliser toute la rue : conduis au pas, prêt à t'arrêter."},
+ explain:"Dans un רחוב משולב, les piétons (et les enfants qui jouent) peuvent utiliser toute la rue : conduis au pas, prête à t'arrêter."},
 {q:"Le panneau rond à bordure rouge portant une maison (424), à l'entrée d'une ville, signifie :",
  choices:["Zone urbaine : 50 km/h par défaut","Zone résidentielle : 30 km/h","Hôtel à proximité","Stationnement résidentiel"], answer:0,
  explain:"Le panneau « maison » (424) marque l'entrée d'une zone de routes urbaines : 50 km/h sauf indication contraire."},
@@ -479,6 +486,24 @@ const QUESTIONS = [
 {q:"Combien de temps le résultat de l'examen théorique reste-t-il valable ?",
  choices:["5 ans","6 mois","1 an","2 ans"], answer:0,
  explain:"Le résultat de la théorie est valable 5 ans (règle mise à jour — d'anciennes sources citent encore 2-3 ans)."},
+{q:"Un policier te fait signe de passer alors que le feu est rouge. Tu :",
+ choices:["Suis les instructions du policier","Attends le vert : le feu prime","Passes seulement si d'autres passent","T'arrêtes et klaxonnes"], answer:0,
+ explain:"Hiérarchie des instructions : policier/signaleur > feux (sauf jaune clignotant) > panneaux de chantier > panneaux fixes > marquage au sol."},
+{q:"La pression des pneus se vérifie :",
+ choices:["À froid, régulièrement","À chaud, après un long trajet","Seulement au contrôle technique","Uniquement avant l'hiver"], answer:0,
+ explain:"La pression se mesure pneus froids (la chaleur fausse la mesure) et doit être contrôlée régulièrement, roue de secours comprise."},
+{q:"Des pneus lisses (sculptures usées) augmentent surtout le risque :",
+ choices:["D'aquaplaning sur route mouillée","De surconsommation uniquement","De crevaison à l'arrêt","Aucun, si la pression est bonne"], answer:0,
+ explain:"Les sculptures évacuent l'eau : usées, le pneu flotte sur le film d'eau (aquaplaning) et la distance de freinage explose — surtout aux premières pluies."},
+{q:"Quand la vitesse double, la distance de freinage :",
+ choices:["Est environ multipliée par quatre","Double aussi","Augmente de moitié","Ne change pas si les freins sont bons"], answer:0,
+ explain:"La distance de freinage croît avec le CARRÉ de la vitesse : à vitesse double, distance de freinage environ quadruplée — d'où l'importance des limites."},
+{q:"Avant de démarrer, tu règles :",
+ choices:["Siège, rétroviseurs et ceinture — avant de rouler","Les rétroviseurs au premier feu rouge","Uniquement le siège, le reste en roulant","Rien si quelqu'un a conduit avant toi"], answer:0,
+ explain:"Tous les réglages (siège, appuie-tête, rétroviseurs, ceinture) se font à l'arrêt, avant de démarrer — jamais en roulant."},
+{q:"Le voyant de température moteur s'allume en roulant. Tu :",
+ choices:["T'arrêtes dès que possible en sécurité et coupes le moteur","Continues jusqu'à destination","Accélères pour ventiler le moteur","Ouvres le radiateur immédiatement"], answer:0,
+ explain:"Moteur en surchauffe : s'arrêter en sécurité, couper le moteur, laisser refroidir — et ne jamais ouvrir le bouchon du radiateur chaud (risque de brûlure)."},
 ];
 
 /* ============ INJECTION ============ */

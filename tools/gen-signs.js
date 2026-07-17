@@ -78,7 +78,8 @@ const roundaboutArrows = (color) => {
       `<path d="M60 34 A26 26 0 0 1 84.5 51" stroke="${color}" stroke-width="8" fill="none"/>` +
       `<path d="M88 40 L88 60 L72 49 Z" fill="${color}"/></g>`;
   }
-  return g;
+  // les giratoires israéliens (121/303) tournent en sens anti-horaire
+  return `<g transform="translate(120 0) scale(-1 1)">${g}</g>`;
 };
 
 const trafficLight =
@@ -134,6 +135,9 @@ SVGS['virage-droite'] = W(tri(
 SVGS['virage-gauche'] = W(tri(
   `<path d="M68 94 L68 74 Q68 60 54 60 L50 60" stroke="${INK}" stroke-width="9" fill="none"/>` +
   `<path d="M52 50 L34 60 L52 70 Z" fill="${INK}"/>` + dovetail(68, 96)));
+SVGS['double-virage'] = W(tri(
+  `<path d="M54 92 L54 84 Q54 74 64 70 Q74 66 74 58 L74 54" stroke="${INK}" stroke-width="9" fill="none"/>` +
+  `<path d="M66 54 L82 54 L74 38 Z" fill="${INK}"/>` + dovetail(54, 94)));
 SVGS['virages'] = W(tri(
   `<path d="M67 46 L51 60 L69 76 L55 92" stroke="${INK}" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`));
 SVGS['retrecissement'] = W(tri(

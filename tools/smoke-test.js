@@ -31,10 +31,10 @@ check('leçon dépliable', doc.querySelector('#lessons-list .lesson').classList.
 
 // Panneaux
 window.showView('panneaux');
-check('72 panneaux dans la grille', doc.querySelectorAll('#sign-grid .sign-cell').length === 72);
+check('73 panneaux dans la grille', doc.querySelectorAll('#sign-grid .sign-cell').length === 73);
 check('7 filtres (Tous + 6 cat.)', doc.querySelectorAll('#sign-chips .chip').length === 7);
 window.setSignFilter('danger');
-check('filtre danger = 26 panneaux', doc.querySelectorAll('#sign-grid .sign-cell').length === 26);
+check('filtre danger = 27 panneaux', doc.querySelectorAll('#sign-grid .sign-cell').length === 27);
 window.setSignFilter('marquage');
 check('filtre marquage = 11', doc.querySelectorAll('#sign-grid .sign-cell').length === 11);
 window.setSignFilter('tous');
@@ -53,7 +53,7 @@ window.revealFlash();
 check('réponse révélée', doc.querySelectorAll('#view-cartes .flash-btns button').length === 2);
 window.gradeFlash(true);
 check('carte suivante', doc.querySelector('#view-cartes').textContent.includes('Carte 2 / 20'));
-for (let i = 1; i < 20; i++) { window.revealFlash(); window.gradeFlash(i % 3 !== 0); }
+for (let i = 1; i < 20; i++) { window.revealFlash(); window.eval('lastTap=0'); window.gradeFlash(i % 3 !== 0); }
 check('fin de séance affichée', doc.querySelector('#view-cartes').textContent.includes('Séance terminée'));
 
 // Quiz entraînement panneaux
@@ -71,8 +71,8 @@ check('bonne réponse marquée', !!doc.querySelector('#view-quiz .qopt.correct')
 window.startQuiz('theorie', 'practice');
 for (let i = 0; i < 15; i++) {
   const q = window.eval("quizSession.questions[quizSession.idx]");
-  window.answerQuiz(q.answerId);
-  window.nextQuestion();
+  window.eval('lastTap=0'); window.answerQuiz(q.answerId);
+  window.eval('lastTap=0'); window.nextQuestion();
 }
 check('score 15/15 en répondant juste', doc.querySelector('#view-quiz').textContent.includes('15 / 15'));
 
@@ -82,7 +82,9 @@ check('examen 30 questions', window.eval("quizSession.questions.length") === 30)
 check('chrono affiché', !!doc.querySelector('#exam-clock'));
 for (let i = 0; i < 30; i++) {
   const q = window.eval("quizSession.questions[quizSession.idx]");
-  window.answerQuiz(i % 5 === 0 ? 'mauvaise-reponse' : q.answerId);
+  window.eval('lastTap=0'); window.answerQuiz(i % 5 === 0 ? 'mauvaise-reponse' : q.answerId);
+  if (i === 0) check('examen : validation par bouton, pas de feedback', !doc.querySelector('#view-quiz .explain') && doc.querySelector('#view-quiz').textContent.includes('Question suivante'));
+  window.eval('lastTap=0'); window.nextQuestion();
 }
 const resultTxt = doc.querySelector('#view-quiz').textContent;
 check('résultat examen affiché (24/30 attendu)', resultTxt.includes('24 / 30'));
@@ -93,7 +95,8 @@ check('revue des erreurs présente', doc.querySelectorAll('#view-quiz .review-it
 window.startQuiz('examen', 'exam');
 for (let i = 0; i < 30; i++) {
   const q = window.eval("quizSession.questions[quizSession.idx]");
-  window.answerQuiz(q.answerId);
+  window.eval('lastTap=0'); window.answerQuiz(q.answerId);
+  window.eval('lastTap=0'); window.nextQuestion();
 }
 check('examen réussi 30/30', doc.querySelector('#view-quiz').textContent.includes('Reçue'));
 
@@ -103,9 +106,9 @@ check('boîtes flashcards sauvegardées', Object.keys(JSON.parse(window.localSto
 
 // Intégrité des données
 const badSigns = window.eval("SIGNS").filter(s => !s.svg || !s.name || !s.sens || !s.cat);
-check('72 fiches complètes', window.eval("SIGNS").length === 72 && badSigns.length === 0);
+check('73 fiches complètes', window.eval("SIGNS").length === 73 && badSigns.length === 0);
 const badQ = window.eval("THEORY_QUESTIONS").filter(q => q.choices.length !== 4 || q.answer !== 0 || !q.explain);
-check('33 questions bien formées', window.eval("THEORY_QUESTIONS").length === 33 && badQ.length === 0);
+check('39 questions bien formées', window.eval("THEORY_QUESTIONS").length === 39 && badQ.length === 0);
 
 check('aucune erreur JS pendant le test', errors.length === 0);
 if (errors.length) console.log('Erreurs:', errors);
